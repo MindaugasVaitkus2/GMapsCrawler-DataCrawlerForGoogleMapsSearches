@@ -12,15 +12,15 @@ def get_re_replaced_str(pattern_re, replacement_str, input_str):
 
 def get_gmaps_url_cursor(gmaps_url):
     target_str = gmaps_url
-    cursor = { 'lon': None, 'lat': None, 'zoom': None }
+    cursor = { 'lat': None, 'lon': None, 'zoom': None }
 
     pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
     re_matches = get_re_matches(pattern_re, target_str)
-    cursor['lon'] = float(re_matches[0].group().replace('/@', '').replace(',', ''))
+    cursor['lat'] = float(re_matches[0].group().replace('/@', '').replace(',', ''))
 
     pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
     re_matches = get_re_matches(pattern_re, target_str)
-    cursor['lat'] = float(re_matches[0].group().replace(',', ''))
+    cursor['lon'] = float(re_matches[0].group().replace(',', ''))
 
     pattern_re = '[,][0-9]*[z]'
     re_matches = get_re_matches(pattern_re, target_str)
@@ -32,11 +32,11 @@ def set_gmaps_url_cursor(gmaps_url, cursor):
     target_str = gmaps_url
 
     pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
-    replacement_str = '/@' + str(cursor['lon']) + ','
+    replacement_str = '/@' + str(cursor['lat']) + ','
     target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
 
     pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
-    replacement_str = ',' + str(cursor['lat']) + ','
+    replacement_str = ',' + str(cursor['lon']) + ','
     target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
 
     pattern_re = '[,][0-9]*[z]'
@@ -67,3 +67,24 @@ def set_gmaps_url_search_str(gmaps_url, search_str):
         replacement_str = '/maps/search/' + str(search_str) + '/'
         target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
     return target_str
+
+if __name__ == '__main__':
+
+    GMAPS_URL = 'https://www.google.com.br/maps/search/New+York+pizza+place/@40.7110686,-73.9962479,12z/data=!3m1!4b1'
+    new_cursor = { 'lat': -20.256, 'lon': 10.0, 'zoom': 17 }
+    new_cursor_str = 'Chicago pizza place'
+
+    print('')
+
+    print('ORIGINAL URL:      ', GMAPS_URL)
+    print('NEW CURSOR:        ', new_cursor)
+    print('NEW SEARCH STRING: ', new_cursor_str)
+    print('')
+
+    print('ORIGINAL CURSOR IS:              ', get_gmaps_url_cursor(GMAPS_URL))
+    print('WITH NEW CURSOR, THE NEW URL IS: ', set_gmaps_url_cursor(GMAPS_URL, new_cursor))
+    print('')
+
+    print('ORIGINAL SEARCH STRING IS:              ', get_gmaps_url_search_str(GMAPS_URL))
+    print('WITH NEW SEARCH STRING, THE NEW URL IS: ', set_gmaps_url_search_str(GMAPS_URL, new_cursor_str))
+    print('')
