@@ -1,7 +1,7 @@
 
 import os
 import time
-from helpers import *
+from gmaps_url import *
 
 from selenium import webdriver
 from selenium.common import exceptions
