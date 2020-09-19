@@ -7,6 +7,12 @@ from selenium import webdriver
 from selenium.common import exceptions
 from selenium.webdriver.chrome.options import Options
 
+def get_current_url():
+    return driver.current_url
+
+def set_current_url(url_str):
+    driver.get(url_str)
+
 def get_gmaps_search_page_places():
     search_page_places = driver.find_elements_by_class_name("section-result-title")
     return search_page_places
@@ -81,14 +87,16 @@ driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTI
 
 if __name__ == '__main__':
 
-    # search string and place string
+    # examples of 'search string' and 'place string'
     search_str = 'petrolina pizzaria'
     place_str = 'Pizzaria Jecana'
 
+    # uses search string to get a list of places strings
     search_places_str = get_gmaps_places_str(search_str)
     print(search_places_str)
     time.sleep(2)
 
+    # uses search string and a place string to get a dict about the place
     get_gmaps_place(search_str, place_str)
     time.sleep(10)
 

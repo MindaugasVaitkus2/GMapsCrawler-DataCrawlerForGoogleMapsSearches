@@ -1,11 +1,5 @@
 import re
 
-def get_current_url():
-    return driver.current_url
-
-def set_current_url(url_str):
-    driver.get(url_str)
-
 def get_re_matches(pattern_re, input_str):
     output_matches = []
     for match in re.finditer(pattern_re, input_str):
