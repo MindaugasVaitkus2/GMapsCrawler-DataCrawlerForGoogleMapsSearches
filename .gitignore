@@ -180,3 +180,6 @@ target
 ####################
 **/selenium_standalone_zips/
 **/selenium_standalone_binaries/
+
+chrome-data/
+**/chrome-data/
