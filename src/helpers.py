@@ -57,8 +57,13 @@ def get_gmaps_url_search_str(gmaps_url):
 def set_gmaps_url_search_str(gmaps_url, search_str):
     target_str = gmaps_url
     search_str = search_str.replace(' ', '+')
-
-    pattern_re = '(/maps/search/)(.)*?[/]'
-    replacement_str = '/maps/search/' + str(search_str) + '/'
-    target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
+    
+    if('/search/' in target_str):
+        pattern_re = '(/maps/search/)(.)*?[/]'
+        replacement_str = '/maps/search/' + str(search_str) + '/'
+        target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
+    else:
+        pattern_re = '(/maps/)(.)*'
+        replacement_str = '/maps/search/' + str(search_str) + '/'
+        target_str = get_re_replaced_str(pattern_re, replacement_str, target_str)
     return target_str

@@ -31,28 +31,25 @@ def goto_gmaps_search_next_page():
 
 def get_gmaps_places_str(search_str):
 
-    url = 'https://www.google.com.br/maps/search/a/'
-    url = set_gmaps_url_search_str(url, search_str)
-    print(url)
+    # assemply and request an initial gmaps url using a search string
+    url = set_gmaps_url_search_str(GMAPS_URL, search_str)
     driver.get(url)
 
     time.sleep(2)
     search_places_str = []
-    page_places = []
     has_next_page = True
     while(has_next_page):
         time.sleep(2)
-        page_places = get_gmaps_search_page_places()
-        for page_place in page_places:
+        page_places_str = get_gmaps_search_page_places()
+        for page_place in page_places_str:
             search_places_str.append(page_place.text)
         has_next_page = goto_gmaps_search_next_page()
     return search_places_str
 
 def get_gmaps_place(search_str, place_str):
 
-    url = 'https://www.google.com.br/maps/search/a/'
-    url = set_gmaps_url_search_str(url, search_str + ' ' + place_str)
-    print(url)
+    # assemply and request an initial gmaps url using a search and place strings
+    url = set_gmaps_url_search_str(GMAPS_URL, search_str + ' ' + place_str)
     driver.get(url)
 
     time.sleep(2)
@@ -85,9 +82,11 @@ CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
 CHROME_OPTIONS.add_argument("--enable-automation")
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
 
+GMAPS_URL = 'https://www.google.com.br/maps/'
+
 if __name__ == '__main__':
 
-    # examples of 'search string' and 'place string'
+    # examples of search and place strings
     search_str = 'petrolina pizzaria'
     place_str = 'Pizzaria Jecana'
 
