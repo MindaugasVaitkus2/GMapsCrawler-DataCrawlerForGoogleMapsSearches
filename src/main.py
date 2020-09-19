@@ -1,17 +1,14 @@
 
 import os
 import time
-from gmaps_url import *
+
+from browser_handler import *
+from gmaps_url_handler import *
+from gmaps_html_handler import *
 
 from selenium import webdriver
 from selenium.common import exceptions
 from selenium.webdriver.chrome.options import Options
-
-def get_current_url():
-    return driver.current_url
-
-def set_current_url(url_str):
-    driver.get(url_str)
 
 def get_gmaps_search_page_places():
     search_page_places = driver.find_elements_by_class_name("section-result-title")
