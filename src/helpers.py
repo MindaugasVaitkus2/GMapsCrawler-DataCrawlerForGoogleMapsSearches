@@ -72,13 +72,13 @@ if __name__ == '__main__':
 
     GMAPS_URL = 'https://www.google.com.br/maps/search/New+York+pizza+place/@40.7110686,-73.9962479,12z/data=!3m1!4b1'
     new_cursor = { 'lat': -20.256, 'lon': 10.0, 'zoom': 17 }
-    new_cursor_str = 'Chicago pizza place'
+    new_search_str = 'Chicago pizza place'
 
     print('')
 
     print('ORIGINAL URL:      ', GMAPS_URL)
     print('NEW CURSOR:        ', new_cursor)
-    print('NEW SEARCH STRING: ', new_cursor_str)
+    print('NEW SEARCH STRING: ', new_search_str)
     print('')
 
     print('ORIGINAL CURSOR IS:              ', get_gmaps_url_cursor(GMAPS_URL))
@@ -86,5 +86,5 @@ if __name__ == '__main__':
     print('')
 
     print('ORIGINAL SEARCH STRING IS:              ', get_gmaps_url_search_str(GMAPS_URL))
-    print('WITH NEW SEARCH STRING, THE NEW URL IS: ', set_gmaps_url_search_str(GMAPS_URL, new_cursor_str))
+    print('WITH NEW SEARCH STRING, THE NEW URL IS: ', set_gmaps_url_search_str(GMAPS_URL, new_search_str))
     print('')
