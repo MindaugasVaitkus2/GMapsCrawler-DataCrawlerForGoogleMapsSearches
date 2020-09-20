@@ -1,6 +1,5 @@
 # GMaps Crawler
 
-<!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
 * [About the Project](#about-the-project)
@@ -20,6 +19,16 @@ The purpose of this project is to deploy a platform to collect data from Google 
 
 ### Getting started
 
+#### Download Chromedriver and make it visible to your OS
+
+1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can find it on the following link:
+
+https://chromedriver.chromium.org/downloads
+
+2. Setup in your OS an environment variable called `CHROMEDRIVER_PATH`, containing the path for the driver on your computer (eg. `C:\chromedriver\chromedriver.exe`).
+
+#### Clone the project and install its dependencies
+
 1. Clone repository:
 
 ```
@@ -32,7 +41,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### (Work in progress...)
+### Basic usage(Work in progress...)
 
 ### License
 
