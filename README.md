@@ -21,9 +21,7 @@ The purpose of this project is to deploy a platform to collect data from Google 
 
 #### Download Chromedriver and make it visible to your OS
 
-1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can find it on the following link:
-
-https://chromedriver.chromium.org/downloads
+1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can download it [here](https://chromedriver.chromium.org/downloads):
 
 2. Setup in your OS an environment variable called `CHROMEDRIVER_PATH`, containing the path for the driver on your computer (eg. `C:\chromedriver\chromedriver.exe`).
 
@@ -41,7 +39,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### Basic usage(Work in progress...)
+### Basic usage (work in progress...)
 
 ### License
 
