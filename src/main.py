@@ -24,13 +24,16 @@ if __name__ == '__main__':
     search_str = 'petrolina pizzaria'
     spot_str = 'Pizzaria Jecana'
 
+    # GMapsNav instatiation
+    gmaps = GMapsNav(driver, GMAPS_URL)
+
     # uses search string to get a list of places strings
-    spots_str = GMapsNav.get_spots_str(driver, GMAPS_URL, search_str)
+    spots_str = gmaps.get_spots_str(search_str)
     print(spots_str)
     time.sleep(5)
 
     # uses search string and a place string to get a dict about the place
-    #GMapsNav.get_spot(driver, GMAPS_URL, search_str, spot_str)
+    #gmaps.get_spot(search_str, spot_str)
     #time.sleep(10)
 
     driver.quit()

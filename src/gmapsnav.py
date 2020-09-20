@@ -1,22 +1,25 @@
 
-from abc import ABC
-
 import time
 from browser import Browser
 from gmapsurl import GMapsURL
 
 from selenium.common import exceptions
 
-class GMapsNav(ABC):
+class GMapsNav():
 
-    @staticmethod
-    def get_search_page_spots(driver):
-        search_page_spots = driver.find_elements_by_class_name("section-result-title")
+    driver = None
+    GMAPS_URL = None
+
+    def __init__(self, driver, GMAPS_URL):
+        self.driver = driver
+        self.GMAPS_URL = GMAPS_URL
+
+    def get_search_page_spots(self):
+        search_page_spots = self.driver.find_elements_by_class_name("section-result-title")
         return search_page_spots
 
-    @staticmethod
-    def goto_search_next_page(driver):
-        possible_enabled_target_elements = driver.find_elements_by_id('n7lv7yjyC35__section-pagination-button-next')
+    def goto_search_next_page(self):
+        possible_enabled_target_elements = self.driver.find_elements_by_id('n7lv7yjyC35__section-pagination-button-next')
         try:
             possible_enabled_target_elements[0].click()
             return True
@@ -27,29 +30,27 @@ class GMapsNav(ABC):
         except exceptions.StaleElementReferenceException:
             return False
 
-    @staticmethod
-    def get_spots_str(driver, GMAPS_URL, search_str):
+    def get_spots_str(self, search_str):
 
         # assemply and request an initial gmaps url using a search string
-        url = GMapsURL.set_search_str(GMAPS_URL, search_str)
-        Browser.set_url(driver, url)
+        url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
+        Browser.set_url(self.driver, url)
 
         time.sleep(2)
         search_spots_str = []
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_spots_str = GMapsNav.get_search_page_spots(driver)
+            page_spots_str = self.get_search_page_spots()
             for page_spot in page_spots_str:
                 search_spots_str.append(page_spot.text)
-            has_next_page = GMapsNav.goto_search_next_page(driver)
+            has_next_page = self.goto_search_next_page()
         return search_spots_str
 
-    @staticmethod
-    def get_spot(driver, GMAPS_URL, search_str, spot_str):
+    def get_spot(self, search_str, spot_str):
 
         # assemply and request an initial gmaps url using a search and spot strings
-        url = GMapsURL.set_search_str(GMAPS_URL, search_str + ' ' + spot_str)
+        url = GMapsURL.set_search_str(self.GMAPS_URL, search_str + ' ' + spot_str)
         Browser.set_url(driver, url)
 
         time.sleep(2)
@@ -57,7 +58,7 @@ class GMapsNav(ABC):
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_spots = GMapsNav.get_search_page_spots(driver)
+            page_spots = self.get_search_page_spots()
             for page_spot in page_spots:
                 print(page_spot.text)
                 print(spot_str)
@@ -73,5 +74,5 @@ class GMapsNav(ABC):
                     time.sleep(2)
                     break
             if(not has_target_found):
-                has_next_page = GMapsNav.goto_search_next_page(driver)
+                has_next_page = self.goto_search_next_page()
 
