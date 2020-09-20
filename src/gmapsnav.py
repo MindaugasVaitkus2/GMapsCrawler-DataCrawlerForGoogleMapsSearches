@@ -7,7 +7,7 @@ from gmapsurl import GMapsURL
 
 from selenium.common import exceptions
 
-class GMapsHTML(ABC):
+class GMapsNav(ABC):
 
     @staticmethod
     def get_search_page_places(driver):
@@ -39,10 +39,10 @@ class GMapsHTML(ABC):
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_places_str = GMapsHTML.get_search_page_places(driver)
+            page_places_str = GMapsNav.get_search_page_places(driver)
             for page_place in page_places_str:
                 search_places_str.append(page_place.text)
-            has_next_page = GMapsHTML.goto_search_next_page(driver)
+            has_next_page = GMapsNav.goto_search_next_page(driver)
         return search_places_str
 
     @staticmethod
@@ -57,7 +57,7 @@ class GMapsHTML(ABC):
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_places = GMapsHTML.get_search_page_places(driver)
+            page_places = GMapsNav.get_search_page_places(driver)
             for page_place in page_places:
                 print(page_place.text)
                 print(place_str)
@@ -73,4 +73,5 @@ class GMapsHTML(ABC):
                     time.sleep(2)
                     break
             if(not has_target_found):
-                has_next_page = GMapsHTML.goto_search_next_page(driver)
+                has_next_page = GMapsNav.goto_search_next_page(driver)
+
