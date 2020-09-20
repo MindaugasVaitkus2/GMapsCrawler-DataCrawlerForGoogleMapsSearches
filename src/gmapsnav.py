@@ -10,9 +10,9 @@ from selenium.common import exceptions
 class GMapsNav(ABC):
 
     @staticmethod
-    def get_search_page_places(driver):
-        search_page_places = driver.find_elements_by_class_name("section-result-title")
-        return search_page_places
+    def get_search_page_spots(driver):
+        search_page_spots = driver.find_elements_by_class_name("section-result-title")
+        return search_page_spots
 
     @staticmethod
     def goto_search_next_page(driver):
@@ -28,28 +28,28 @@ class GMapsNav(ABC):
             return False
 
     @staticmethod
-    def get_places_str(driver, GMAPS_URL, search_str):
+    def get_spots_str(driver, GMAPS_URL, search_str):
 
         # assemply and request an initial gmaps url using a search string
         url = GMapsURL.set_search_str(GMAPS_URL, search_str)
         Browser.set_url(driver, url)
 
         time.sleep(2)
-        search_places_str = []
+        search_spots_str = []
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_places_str = GMapsNav.get_search_page_places(driver)
-            for page_place in page_places_str:
-                search_places_str.append(page_place.text)
+            page_spots_str = GMapsNav.get_search_page_spots(driver)
+            for page_spot in page_spots_str:
+                search_spots_str.append(page_spot.text)
             has_next_page = GMapsNav.goto_search_next_page(driver)
-        return search_places_str
+        return search_spots_str
 
     @staticmethod
-    def get_place(driver, GMAPS_URL, search_str, place_str):
+    def get_spot(driver, GMAPS_URL, search_str, spot_str):
 
-        # assemply and request an initial gmaps url using a search and place strings
-        url = GMapsURL.set_search_str(GMAPS_URL, search_str + ' ' + place_str)
+        # assemply and request an initial gmaps url using a search and spot strings
+        url = GMapsURL.set_search_str(GMAPS_URL, search_str + ' ' + spot_str)
         Browser.set_url(driver, url)
 
         time.sleep(2)
@@ -57,19 +57,19 @@ class GMapsNav(ABC):
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_places = GMapsNav.get_search_page_places(driver)
-            for page_place in page_places:
-                print(page_place.text)
-                print(place_str)
-                print(page_place.text == place_str)
+            page_spots = GMapsNav.get_search_page_spots(driver)
+            for page_spot in page_spots:
+                print(page_spot.text)
+                print(spot_str)
+                print(page_spot.text == spot_str)
                 print(' ')
-                if(page_place.text == place_str):
+                if(page_spot.text == spot_str):
                     has_target_found = True
                     has_next_page = False    
                     time.sleep(2)            
                     #driver.get('https://www.google.com.br/maps/search/petrolina+pizzaria//@0.0,0.0,21z/')
                     #time.sleep(2) 
-                    page_place.click()
+                    page_spot.click()
                     time.sleep(2)
                     break
             if(not has_target_found):

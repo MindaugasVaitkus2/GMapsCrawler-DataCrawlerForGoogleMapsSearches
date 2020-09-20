@@ -22,15 +22,15 @@ if __name__ == '__main__':
 
     # examples of search and place strings
     search_str = 'petrolina pizzaria'
-    place_str = 'Pizzaria Jecana'
+    spot_str = 'Pizzaria Jecana'
 
     # uses search string to get a list of places strings
-    search_places_str = GMapsNav.get_places_str(driver, GMAPS_URL, search_str)
+    search_places_str = GMapsNav.get_spots_str(driver, GMAPS_URL, search_str)
     print(search_places_str)
     time.sleep(5)
 
     # uses search string and a place string to get a dict about the place
-    #GMapsNav.get_place(driver, GMAPS_URL, search_str, place_str)
+    #GMapsNav.get_place(driver, GMAPS_URL, search_str, spot_str)
     #time.sleep(10)
 
     driver.quit()
