@@ -57,10 +57,10 @@ def get_gmaps_place(search_str, place_str):
         page_places = get_gmaps_search_page_places()
         for page_place in page_places:
             print(page_place.text)
-            print(target_str)
-            print(page_place.text == target_str)
+            print(place_str)
+            print(page_place.text == place_str)
             print(' ')
-            if(page_place.text == target_str):
+            if(page_place.text == place_str):
                 has_target_found = True
                 has_next_page = False    
                 time.sleep(2)            

@@ -8,7 +8,7 @@
 
 ### Installation
 
-1. Clone repository (Windows 10):
+1. Clone repository:
 
 ```
 git clone https://github.com/smurilogs/gmaps-crawler.git
