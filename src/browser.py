@@ -4,9 +4,13 @@ from abc import ABC
 class Browser(ABC):
 
     @staticmethod
-    def get_url(driver):
-        return driver.current_url
+    def get_url(DRIVER):
+        return DRIVER.current_url
     
     @staticmethod
-    def set_url(driver, url_str):
-        driver.get(url_str)
+    def set_url(DRIVER, url_str):
+        DRIVER.get(url_str)
+
+    @staticmethod
+    def close(DRIVER):
+        DRIVER.quit()

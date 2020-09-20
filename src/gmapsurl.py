@@ -78,6 +78,21 @@ class GMapsURL(ABC):
             target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
         return target_str
 
+    @staticmethod
+    def is_search_page(gmaps_url):
+        if('/search/' in gmaps_url):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_place_page(gmaps_url):
+        if('/place/' in gmaps_url):
+            return True
+        else:
+            return False
+
+
 if __name__ == '__main__':
 
     GMAPS_URL = 'https://www.google.com.br/maps/search/New+York+pizza+place/@40.7110686,-73.9962479,12z/data=!3m1!4b1'
