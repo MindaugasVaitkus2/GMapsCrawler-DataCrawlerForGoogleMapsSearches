@@ -15,23 +15,23 @@ The purpose of this project is to deploy a platform to collect data from Google 
 #### Build with
 
 * Python 3.8
-* Selenium Webdriver for Python
+* Selenium WebDriver for Python
 
 ## 2. Requirements
 
-* Python 3.8 32-bit installed
+* Python 3.8 32-bit/64-bit installed
 * Google Chrome Browser installed
-* ChromeDriver (`chromedriver.exe` available in your computer - see [3. Getting Started](#getting-started))
+* ChromeDriver downloaded (`chromedriver.exe` available on your computer - see [3. Getting Started](#getting-started))
 
 ## 3. Getting Started
 
-#### Download Chromedriver and make it visible to this project code
+* #### Downloading Chromedriver and making it visible to this project source code
 
 1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can download it [here](https://chromedriver.chromium.org/downloads):
 
 2. Setup in your OS an environment variable called `CHROMEDRIVER_PATH`, containing the path for the driver on your computer (e.g. `C:\chromedriver\chromedriver.exe`).
 
-#### Clone the project and install its dependencies
+* #### Cloning this project and installing its dependencies
 
 1. Clone repository:
 
