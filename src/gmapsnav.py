@@ -2,7 +2,6 @@
 import time
 from browser import Browser
 from gmapsurl import GMapsURL
-#from gmapsauto import GMapsAuto
 
 from selenium.common import exceptions
 
@@ -27,12 +26,39 @@ class GMapsNav():
             search_page_results.append({'search-index': None, 'place': element.text})
         return search_page_results
 
-    def collect_place_text(self):
+    def collect_place(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
-        place_texts_found = []
+        texts_found = []
         for element in elements_found:
-            place_texts_found.append({'place': element.text})
-        return place_texts_found[0]
+            texts_found.append({'value': element.text})
+        return texts_found[0]
+
+    def collect_address(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
+        texts_found = []
+        for element in elements_found:
+            texts_found.append({'value': element.text})
+        return texts_found[0]
+
+    def collect_status(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("cX2WmPgCkHi__section-info-text")
+        texts_found = []
+        for element in elements_found:
+            texts_found.append({'value': element.text})
+        if(len(texts_found) > 0):
+            return texts_found[0]
+        else:
+            return {'value': None }
+
+    def collect_phone(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
+        texts_found = []
+        for element in elements_found:
+            texts_found.append({'value': element.text})
+        if(len(texts_found) > 0):
+            return texts_found[0]
+        else:
+            return {'value': None }
 
     def access_search_page_result_by_index(self, index):
         possible_enabled_target_elements = self.DRIVER.find_elements_by_class_name('section-result-text-content')
@@ -61,25 +87,40 @@ class GMapsNav():
             #print(e)
             return False
 
-    def apply_max_zoom_in(self):
+    def hit_zoom_in(self):
         possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-in')
         try:
-            for _ in range(21):
-                possible_enabled_target_elements[0].click()
+            possible_enabled_target_elements[0].click()
             return True
         except Exception as e:
             #print(e)
             return False        
 
-    def apply_max_zoom_out(self):
+    def hit_zoom_out(self):
         possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-out')
         try:
-            for _ in range(21):
-                possible_enabled_target_elements[0].click()
+            possible_enabled_target_elements[0].click()
             return True
         except Exception as e:
             #print(e)
             return False   
+
+    def hit_searchbox_button(self):
+        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('searchbox-searchbutton')
+        try:
+            possible_enabled_target_elements[0].click()
+            return True
+        except Exception as e:
+            #print(e)
+            return False   
+
+    def has_title(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
+        if(len(elements_found) > 0):
+            return True
+        else:
+            return False
+
 
     def get_search_results(self, search_str):
 
@@ -101,7 +142,7 @@ class GMapsNav():
                 if(GMapsURL.is_search_page(url)):
                     STATE = 'GETTING_PAGE_RESULTS'
                 elif(GMapsURL.is_place_page(url)):
-                    STATE = 'GETTING_SINGLE_RESULT'
+                    STATE = 'COLLECTING_SINGLE_RESULT'
                 else:
                     STATE = 'FAIL'
             
@@ -122,8 +163,8 @@ class GMapsNav():
                 else:
                     STATE = 'FAIL'
 
-            elif(STATE == 'GETTING_SINGLE_RESULT'):
-                # do something for GETTING_SINGLE_RESULT STATE
+            elif(STATE == 'COLLECTING_SINGLE_RESULT'):
+                # do something for COLLECTING_SINGLE_RESULT STATE
                 break
 
             elif(STATE == 'FINISH'):
@@ -145,72 +186,125 @@ class GMapsNav():
 
         STATE = 'ACCESSING_GMAPS_URL'
         PAGE_CURSOR = 0
-        PAGE_RESULTS_LIMIT = None
+        PAGE_CURSOR_LIMIT = None
         has_next_page = True
+
+        debug_mode = True
+
+        findings = []
 
         while(True):
 
             if(STATE == 'ACCESSING_GMAPS_URL'):
+                if(debug_mode): print('ACCESSING_GMAPS_URL')
 
                 # STATE behavior
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
                 Browser.set_url(self.DRIVER, url)
                 time.sleep(2)
-                self.apply_max_zoom_in()
-                time.sleep(1)
 
                 # transition logic
                 url = Browser.get_url(self.DRIVER)
-                if(GMapsURL.is_search_page(url)):
+                if(self.has_title()):
+                    STATE = 'COLLECTING_SINGLE_RESULT'
+                elif(GMapsURL.is_search_page(url)):
                     STATE = 'ACCESSING_CURSOR_RESULT'
-                elif(GMapsURL.is_place_page(url)):
-                    STATE = 'GETTING_SINGLE_RESULT'
                 else:
                     STATE = 'FAIL'
 
             elif(STATE == 'ACCESSING_CURSOR_RESULT'):
+                if(debug_mode): print('ACCESSING_CURSOR_RESULT')
 
                 # STATE behavior
                 self.access_search_page_result_by_index(PAGE_CURSOR)
-                PAGE_RESULTS_LIMIT = self.get_results_n() - 1          
-                print(PAGE_RESULTS_LIMIT)
-                print(PAGE_CURSOR)  
-                print('')  
+                PAGE_CURSOR_LIMIT = self.get_results_n() - 1          
+                #print(PAGE_CURSOR_LIMIT)
+                #print(PAGE_CURSOR)  
+                #print('')  
                 time.sleep(2)
 
                 # transition logic
-                if(PAGE_CURSOR <= PAGE_RESULTS_LIMIT):
-                    STATE = 'COLLECTING_RESULT'
+                if(PAGE_CURSOR <= PAGE_CURSOR_LIMIT):
+                    STATE = 'COLLECTING_CURSOR_RESULT'
                 else:
                     STATE = 'GOING_TO_NEXT_PAGE'
 
-            elif(STATE == 'COLLECTING_RESULT'):
-        
+            elif(STATE == 'COLLECTING_CURSOR_RESULT'):
+                if(debug_mode): print('COLLECTING_CURSOR_RESULT')
+
                 # STATE behavior
                 url = Browser.get_url(self.DRIVER)
-                print(GMapsURL.get_cursor(url))                
-                print(self.collect_place_text())
-                PAGE_CURSOR += 1
+                finding = {
+                    "place": { 
+                        "name": self.collect_place()['value'], 
+                        "address": self.collect_address()['value'],
+                        #"contact": {
+                        #    "phone": self.collect_phone()['value']
+                        #},                      
+                        "status": self.collect_status()['value'],
+                        "coordinates": {
+                            "latitude": GMapsURL.get_cursor(url)['lat'],
+                            "longitude": GMapsURL.get_cursor(url)['lon'] + 0.0001364
+                        } 
+                    }
+                }
+                findings.append(finding)
+                time.sleep(2)
 
+                print(finding)
+         
                 # transition logic
+                PAGE_CURSOR += 1
                 STATE = 'RETURNING_TO_LIST'
 
+            elif(STATE == 'COLLECTING_SINGLE_RESULT'):
+                if(debug_mode): print('COLLECTING_SINGLE_RESULT')
+                
+                # STATE behavior
+                self.hit_searchbox_button()
+                time.sleep(2)
+                for _ in range(21):
+                    self.hit_zoom_in()
+                time.sleep(2)
+
+                url = Browser.get_url(self.DRIVER)
+                finding = {
+                    "place": { 
+                        "name": self.collect_place()['value'], 
+                        "address": self.collect_address()['value'],
+                        #"contact": {
+                        #    "phone": self.collect_phone()['value']
+                        #},                      
+                        "status": self.collect_status()['value'],
+                        "coordinates": {
+                            "latitude": GMapsURL.get_cursor(url)['lat'],
+                            "longitude": GMapsURL.get_cursor(url)['lon'] + 0.0001364
+                        } 
+                    }
+                }
+                findings.append(finding)
+                print(findings)
+
+                # transition logic
+                STATE = 'FINISH'
 
             elif(STATE == 'RETURNING_TO_LIST'):
+                if(debug_mode): print('RETURNING_TO_LIST')
     
                 # STATE behavior
                 self.access_search_back_to_results()
                 time.sleep(2)
-
-                self.apply_max_zoom_in()
-                time.sleep(1)
+                for _ in range(21):
+                    self.hit_zoom_in()
+                time.sleep(2)
 
                 # transition logic
                 STATE = 'ACCESSING_CURSOR_RESULT'
 
             elif(STATE == 'GOING_TO_NEXT_PAGE'):
+                if(debug_mode): print('GOING_TO_NEXT_PAGE')
 
-                 # STATE behavior
+                # STATE behavior
                 self.access_search_back_to_results()
                 time.sleep(2)
                 has_next_page = self.access_search_next_page()
@@ -224,10 +318,12 @@ class GMapsNav():
                     STATE = 'FINISH'
 
             elif(STATE == 'FINISH'):
+                if(debug_mode): print('FINISH')
                 # do something for FINISH STATE
                 break
 
             elif(STATE == 'FAIL'):
+                if(debug_mode): print('FAIL')
                 # do something for FAIL STATE
                 break
 

@@ -14,6 +14,8 @@ CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
 CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
 CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
 CHROME_OPTIONS.add_argument("--enable-automation")
+#CHROME_OPTIONS.add_argument("--window-size=800,600")
+#CHROME_OPTIONS.add_argument("start-maximized");
 
 DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
 GMAPS_URL = 'https://www.google.com/maps/'
