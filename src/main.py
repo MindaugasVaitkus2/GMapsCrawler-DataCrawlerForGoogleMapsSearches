@@ -21,7 +21,7 @@ GMAPS_URL = 'https://www.google.com/maps/'
 if __name__ == '__main__':
 
     # examples of search and place strings
-    search_str = 'petrolina estádio'
+    search_str = 'petrolina pizzaria'
     place_str = ''
 
     # GMapsNav instatiation

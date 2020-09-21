@@ -2,6 +2,7 @@
 import time
 from browser import Browser
 from gmapsurl import GMapsURL
+#from gmapsauto import GMapsAuto
 
 from selenium.common import exceptions
 
@@ -13,6 +14,7 @@ class GMapsNav():
     def __init__(self, DRIVER, GMAPS_URL):
         self.DRIVER = DRIVER
         self.GMAPS_URL = GMAPS_URL
+        #self.gmapsauto = GMapsAuto(DRIVER, GMAPS_URL)
 
     def get_results_n(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
@@ -24,6 +26,13 @@ class GMapsNav():
         for element in elements_found:
             search_page_results.append({'search-index': None, 'place': element.text})
         return search_page_results
+
+    def collect_place_text(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
+        place_texts_found = []
+        for element in elements_found:
+            place_texts_found.append({'place': element.text})
+        return place_texts_found[0]
 
     def access_search_page_result_by_index(self, index):
         possible_enabled_target_elements = self.DRIVER.find_elements_by_class_name('section-result-text-content')
@@ -51,6 +60,26 @@ class GMapsNav():
         except Exception as e:
             #print(e)
             return False
+
+    def apply_max_zoom_in(self):
+        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-in')
+        try:
+            for _ in range(21):
+                possible_enabled_target_elements[0].click()
+            return True
+        except Exception as e:
+            #print(e)
+            return False        
+
+    def apply_max_zoom_out(self):
+        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-out')
+        try:
+            for _ in range(21):
+                possible_enabled_target_elements[0].click()
+            return True
+        except Exception as e:
+            #print(e)
+            return False   
 
     def get_search_results(self, search_str):
 
@@ -127,6 +156,8 @@ class GMapsNav():
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
                 Browser.set_url(self.DRIVER, url)
                 time.sleep(2)
+                self.apply_max_zoom_in()
+                time.sleep(1)
 
                 # transition logic
                 url = Browser.get_url(self.DRIVER)
@@ -136,7 +167,7 @@ class GMapsNav():
                     STATE = 'GETTING_SINGLE_RESULT'
                 else:
                     STATE = 'FAIL'
-            
+
             elif(STATE == 'ACCESSING_CURSOR_RESULT'):
 
                 # STATE behavior
@@ -148,25 +179,31 @@ class GMapsNav():
                 time.sleep(2)
 
                 # transition logic
-                STATE = 'COLLECTING_RESULT'
+                if(PAGE_CURSOR <= PAGE_RESULTS_LIMIT):
+                    STATE = 'COLLECTING_RESULT'
+                else:
+                    STATE = 'GOING_TO_NEXT_PAGE'
 
             elif(STATE == 'COLLECTING_RESULT'):
         
                 # STATE behavior
+                url = Browser.get_url(self.DRIVER)
+                print(GMapsURL.get_cursor(url))                
+                print(self.collect_place_text())
                 PAGE_CURSOR += 1
 
-
                 # transition logic
-                if(PAGE_CURSOR <= PAGE_RESULTS_LIMIT):
-                    STATE = 'RETURNING_TO_LIST'
-                else:
-                    STATE = 'GOING_TO_NEXT_PAGE'
+                STATE = 'RETURNING_TO_LIST'
+
 
             elif(STATE == 'RETURNING_TO_LIST'):
     
                 # STATE behavior
                 self.access_search_back_to_results()
                 time.sleep(2)
+
+                self.apply_max_zoom_in()
+                time.sleep(1)
 
                 # transition logic
                 STATE = 'ACCESSING_CURSOR_RESULT'

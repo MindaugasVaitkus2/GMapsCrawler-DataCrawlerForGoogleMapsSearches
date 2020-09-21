@@ -39,17 +39,24 @@ class GMapsURL(ABC):
     def set_cursor(gmaps_url, cursor):
         target_str = gmaps_url
 
-        pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
-        replacement_str = '/@' + str(cursor['lat']) + ','
-        target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+        if('/@' in target_str):
 
-        pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
-        replacement_str = ',' + str(cursor['lon']) + ','
-        target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
+            replacement_str = '/@' + str(cursor['lat']) + ','
+            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
 
-        pattern_re = '[,][0-9]*[z]'
-        replacement_str = ',' +  str(cursor['zoom']) + 'z'
-        target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
+            replacement_str = ',' + str(cursor['lon']) + ','
+            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+
+            pattern_re = '[,][0-9]*[z]'
+            replacement_str = ',' +  str(cursor['zoom']) + 'z'
+            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+        
+        elif('/search/' in target_str):
+
+            addition_str = '@' +  str(cursor['lat']) + ',' + str(cursor['lon']) + ',' + str(cursor['zoom']) + 'z'
+            target_str = target_str + addition_str
 
         return target_str
 
