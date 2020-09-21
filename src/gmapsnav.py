@@ -14,9 +14,12 @@ class GMapsNav():
         self.DRIVER = DRIVER
         self.GMAPS_URL = GMAPS_URL
 
-    def get_search_page_places(self):
-        search_page_places = self.DRIVER.find_elements_by_class_name("section-result-title")
-        return search_page_places
+    def get_search_page_results(self):
+        elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
+        search_page_results = []
+        for element in elements_found:
+            search_page_results.append({'place': element.text})
+        return search_page_results
 
     def goto_search_next_page(self):
         possible_enabled_target_elements = self.DRIVER.find_elements_by_id('n7lv7yjyC35__section-pagination-button-next')
@@ -32,15 +35,15 @@ class GMapsNav():
 
     def get_search_results(self, search_str):
 
-        state = 'GETTING_URL'
-        search_places_str = []
+        STATE = 'ACCESSING_GMAPS_URL'
+        search_results = []
         has_next_page = True
 
         while(True):
 
-            if(state == 'GETTING_URL'):
-
-                # state behavior
+            if(STATE == 'ACCESSING_GMAPS_URL'):
+    
+                # STATE behavior
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
                 Browser.set_url(self.DRIVER, url)
                 time.sleep(2)
@@ -48,39 +51,45 @@ class GMapsNav():
                 # transition logic
                 url = Browser.get_url(self.DRIVER)
                 if(GMapsURL.is_search_page(url)):
-                    state = 'SEARCHING_RESULTS'
+                    STATE = 'GETTING_PAGE_RESULTS'
                 elif(GMapsURL.is_place_page(url)):
-                    state = 'GETTING_SINGLE_RESULT'
+                    STATE = 'GETTING_SINGLE_RESULT'
                 else:
-                    state = 'FAIL'
-                    break
+                    STATE = 'FAIL'
             
-            elif(state == 'SEARCHING_RESULTS'):
+            elif(STATE == 'GETTING_PAGE_RESULTS'):
 
-                # state behavior                
-                page_places_str = self.get_search_page_places()
-                for page_place in page_places_str:
-                    search_places_str.append(page_place.text)
+                # STATE behavior                
+                search_page_results = self.get_search_page_results()
+                for search_page_result in search_page_results:
+                    search_results.append(search_page_result)
                 has_next_page = self.goto_search_next_page()
                 time.sleep(2)
 
                 # transition logic
                 if(has_next_page):
-                    state = 'SEARCHING_RESULTS'
+                    STATE = 'GETTING_PAGE_RESULTS'
                 elif(not has_next_page):
-                    state = 'FINISH'
-                    break
+                    STATE = 'FINISH'
                 else:
-                    state = 'FAIL'
-                    break
+                    STATE = 'FAIL'
+
+            elif(STATE == 'GETTING_SINGLE_RESULT'):
+                # do something for GETTING_SINGLE_RESULT STATE
+                break
+
+            elif(STATE == 'FINISH'):
+                # do something for FINISH STATE
+                break
+
+            elif(STATE == 'FAIL'):
+                # do something for FAIL STATE
+                break
 
         Browser.close(self.DRIVER)
 
-        #return search_places_str
-
-        search_results = []
-        for i, place_str in enumerate(search_places_str):
-            search_results.append({'index': i, 'place': place_str})
+        for i, search_result in enumerate(search_results, start=1):
+            search_result['search-index'] = i
 
         return search_results
 
@@ -95,7 +104,7 @@ class GMapsNav():
         has_next_page = True
         while(has_next_page):
             time.sleep(2)
-            page_places = self.get_search_page_places()
+            page_places = self.get_search_page_results()
             for page_place in page_places:
                 print(page_place.text)
                 print(place_str)
