@@ -18,7 +18,7 @@ class GMapsNav():
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
         search_page_results = []
         for element in elements_found:
-            search_page_results.append({'place': element.text})
+            search_page_results.append({'search-index': None, 'place': element.text})
         return search_page_results
 
     def goto_search_next_page(self):
@@ -26,11 +26,8 @@ class GMapsNav():
         try:
             possible_enabled_target_elements[0].click()
             return True
-        except exceptions.ElementClickInterceptedException:
-            return False
-        except exceptions.ElementNotInteractableException:
-            return False
-        except exceptions.StaleElementReferenceException:
+        except Exception as e:
+            #print(e)
             return False
 
     def get_search_results(self, search_str):
