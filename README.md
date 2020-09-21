@@ -2,17 +2,17 @@
 
 ## Table of Contents
 
-* [About the Project](#1-about-the-project)
-* [Requirements](#2-requirements)
-* [Getting Started](#3-getting-started)
-* [Basic Usage](#4-license)
-* [License](#5-license)
+* [1. About the Project](#1-about-the-project)
+* [2. Requirements](#2-requirements)
+* [3. Getting Started](#3-getting-started)
+* [4. Basic Usage](#4-license)
+* [5. License](#5-license)
 
 ## 1. About the project
 
 The purpose of this project is to deploy a platform to collect data from Google Maps by using code in a easy way. Based on the usage of it, you will be able to execute commands to retrieve search results about locations and places.
 
-#### Build with
+#### Built with
 
 * Python 3.8
 * Selenium WebDriver for Python
@@ -27,9 +27,9 @@ The purpose of this project is to deploy a platform to collect data from Google 
 
 * #### Downloading Chromedriver and making it visible to this project source code
 
-&nbsp;&nbsp;1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can download it [here](https://chromedriver.chromium.org/downloads):
+1. Download the driver `chromedriver.exe` compatible with the Chrome browser installed on your computer. You can download it [here](https://chromedriver.chromium.org/downloads):
 
-&nbsp;&nbsp;2. Setup in your OS an environment variable called `CHROMEDRIVER_PATH`, containing the path for the driver on your computer (e.g. `C:\chromedriver\chromedriver.exe`).
+2. Setup in your OS an environment variable called `CHROMEDRIVER_PATH`, containing the path for the driver on your computer (e.g. `C:\chromedriver\chromedriver.exe`).
 
 * #### Cloning this project and installing its dependencies
 
