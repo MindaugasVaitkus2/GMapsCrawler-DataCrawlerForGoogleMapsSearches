@@ -12,5 +12,5 @@ class Browser(ABC):
         DRIVER.get(url_str)
 
     @staticmethod
-    def close(DRIVER):
+    def quit(DRIVER):
         DRIVER.quit()

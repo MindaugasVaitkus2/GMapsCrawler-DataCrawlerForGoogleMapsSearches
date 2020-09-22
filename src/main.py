@@ -1,40 +1,21 @@
 
-import os
 import time
-
-from browser import Browser
-from gmapsurl import GMapsURL
-from gmapsnav import GMapsNav
-
-from selenium import webdriver
-from selenium.common import exceptions
-from selenium.webdriver.chrome.options import Options
-
-CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
-CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
-CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
-CHROME_OPTIONS.add_argument("--enable-automation")
-#CHROME_OPTIONS.add_argument("--window-size=800,600")
-#CHROME_OPTIONS.add_argument("start-maximized");
-
-DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
-GMAPS_URL = 'https://www.google.com/maps/'
+from gmapscrawler import GMapsCrawler
 
 if __name__ == '__main__':
 
-    # examples of search and place strings
-    search_str = 'petrolina pizzaria'
-    place_str = ''
+    # GMapsCrawler instatiation
+    crawler = GMapsCrawler()
 
-    # GMapsNav instatiation
-    gmaps = GMapsNav(DRIVER, GMAPS_URL)
+    # example of a search string
+    search_str = 'ponte petrolina'
 
-    # uses search string to get a list of places strings
-    #places_str = gmaps.get_search_results(search_str)
-    #print(places_str)
-    #time.sleep(5)
+    # uses search string to get a list titles
+    places_str = crawler.get_titles(search_str)
+    print(places_str)
 
-    # uses search string and a place string to get a dict about the place
-    gmaps.get_place(search_str, place_str)
+    # uses search string to get a list of detailed places
+    places = crawler.get_places(search_str)
+    print(places)
 
 

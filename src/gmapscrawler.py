@@ -1,19 +1,22 @@
 
+import os
 import time
+
 from browser import Browser
 from gmapsurl import GMapsURL
 
+from selenium import webdriver
+from selenium.common import exceptions
+from selenium.webdriver.chrome.options import Options
 from selenium.common import exceptions
 
-class GMapsNav():
+class GMapsCrawler():
 
     DRIVER = None
     GMAPS_URL = None
 
-    def __init__(self, DRIVER, GMAPS_URL):
-        self.DRIVER = DRIVER
-        self.GMAPS_URL = GMAPS_URL
-        #self.gmapsauto = GMapsAuto(DRIVER, GMAPS_URL)
+    def __init__(self):
+        pass
 
     def get_results_n(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
@@ -23,22 +26,28 @@ class GMapsNav():
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
         search_page_results = []
         for element in elements_found:
-            search_page_results.append({'search-index': None, 'place': element.text})
+            search_page_results.append({ 'title': element.text })
         return search_page_results
 
-    def collect_place(self):
+    def collect_title(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
         texts_found = []
         for element in elements_found:
             texts_found.append({'value': element.text})
-        return texts_found[0]
+        if(len(texts_found) > 0):
+            return texts_found[0]
+        else:
+            return {'value': None }
 
     def collect_address(self):
         elements_found = self.DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
         texts_found = []
         for element in elements_found:
             texts_found.append({'value': element.text})
-        return texts_found[0]
+        if(len(texts_found) > 0):
+            return texts_found[0]
+        else:
+            return {'value': None }
 
     def collect_status(self):
         elements_found = self.DRIVER.find_elements_by_class_name("cX2WmPgCkHi__section-info-text")
@@ -121,82 +130,32 @@ class GMapsNav():
         else:
             return False
 
+    def get_titles(self, search_str):
 
-    def get_search_results(self, search_str):
-
-        STATE = 'ACCESSING_GMAPS_URL'
-        search_results = []
+        STATE = 'CREATING_SESSION'
         has_next_page = True
+        debug_mode = False
+        titles = []
 
         while(True):
 
-            if(STATE == 'ACCESSING_GMAPS_URL'):
-    
-                # STATE behavior
-                url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
-                Browser.set_url(self.DRIVER, url)
-                time.sleep(2)
+            if(STATE == 'CREATING_SESSION'):
+
+                # STATE behavior          
+                CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
+                CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                CHROME_OPTIONS.add_argument("--enable-automation")
+                #CHROME_OPTIONS.add_argument("--window-size=800,600")
+                #CHROME_OPTIONS.add_argument("start-maximized");
+                self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                self.GMAPS_URL = 'https://www.google.com/maps/'
 
                 # transition logic
-                url = Browser.get_url(self.DRIVER)
-                if(GMapsURL.is_search_page(url)):
-                    STATE = 'GETTING_PAGE_RESULTS'
-                elif(GMapsURL.is_place_page(url)):
-                    STATE = 'COLLECTING_SINGLE_RESULT'
-                else:
-                    STATE = 'FAIL'
-            
-            elif(STATE == 'GETTING_PAGE_RESULTS'):
+                STATE = 'ACCESSING_GMAPS_URL'
 
-                # STATE behavior                
-                search_page_results = self.collect_search_page_results()
-                for search_page_result in search_page_results:
-                    search_results.append(search_page_result)
-                has_next_page = self.access_search_next_page()
-                time.sleep(2)
-
-                # transition logic
-                if(has_next_page):
-                    STATE = 'GETTING_PAGE_RESULTS'
-                elif(not has_next_page):
-                    STATE = 'FINISH'
-                else:
-                    STATE = 'FAIL'
-
-            elif(STATE == 'COLLECTING_SINGLE_RESULT'):
-                # do something for COLLECTING_SINGLE_RESULT STATE
-                break
-
-            elif(STATE == 'FINISH'):
-                # do something for FINISH STATE
-                break
-
-            elif(STATE == 'FAIL'):
-                # do something for FAIL STATE
-                break
-
-        Browser.close(self.DRIVER)
-
-        for i, search_result in enumerate(search_results, start=1):
-            search_result['search-index'] = i
-
-        return search_results
-
-    def get_place(self, search_str, place_str):
-
-        STATE = 'ACCESSING_GMAPS_URL'
-        PAGE_CURSOR = 0
-        PAGE_CURSOR_LIMIT = None
-        has_next_page = True
-
-        debug_mode = True
-
-        findings = []
-
-        while(True):
-
-            if(STATE == 'ACCESSING_GMAPS_URL'):
-                if(debug_mode): print('ACCESSING_GMAPS_URL')
+            elif(STATE == 'ACCESSING_GMAPS_URL'):
+                if(debug_mode): print(STATE)
 
                 # STATE behavior
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
@@ -208,12 +167,117 @@ class GMapsNav():
                 if(self.has_title()):
                     STATE = 'COLLECTING_SINGLE_RESULT'
                 elif(GMapsURL.is_search_page(url)):
-                    STATE = 'ACCESSING_CURSOR_RESULT'
+                    STATE = 'COLLECTING_PAGE_RESULTS'
                 else:
                     STATE = 'FAIL'
 
-            elif(STATE == 'ACCESSING_CURSOR_RESULT'):
-                if(debug_mode): print('ACCESSING_CURSOR_RESULT')
+            elif(STATE == 'COLLECTING_PAGE_RESULTS'):
+                if(debug_mode): print(STATE)
+
+                # STATE behavior                
+                search_page_results = self.collect_search_page_results()
+                for search_page_result in search_page_results:
+                    titles.append(search_page_result)
+                time.sleep(2)
+
+                # transition logic
+                STATE = 'GOING_TO_NEXT_PAGE'
+
+            elif(STATE == 'COLLECTING_SINGLE_RESULT'):
+                if(debug_mode): print(STATE)
+                
+                # STATE behavior
+                self.hit_searchbox_button()
+                time.sleep(2)
+                for _ in range(21):
+                    self.hit_zoom_in()
+                time.sleep(2)
+
+                url = Browser.get_url(self.DRIVER)
+                finding = {
+                    "title": self.collect_title()['value'] 
+                }
+                titles.append(finding)
+                if(debug_mode): print(titles)
+
+                # transition logic
+                STATE = 'FINISH'
+
+            elif(STATE == 'GOING_TO_NEXT_PAGE'):
+                if(debug_mode): print(STATE)
+
+                # STATE behavior
+                self.access_search_back_to_results()
+                time.sleep(2)
+                has_next_page = self.access_search_next_page()
+                time.sleep(2)
+
+                # transition logic
+                if(has_next_page):
+                    STATE = 'COLLECTING_PAGE_RESULTS'
+                else:
+                    STATE = 'FINISH'
+
+            elif(STATE == 'FINISH'):
+                if(debug_mode): print('FINISH')
+                # do something for FINISH STATE
+                break
+
+            elif(STATE == 'FAIL'):
+                if(debug_mode): print('FAIL')
+                # do something for FAIL STATE
+                break
+
+        Browser.quit(self.DRIVER)
+        return titles
+
+    def get_places(self, search_str):
+
+        STATE = 'CREATING_SESSION'
+        PAGE_CURSOR = 0
+        PAGE_CURSOR_LIMIT = None
+        has_next_page = True
+
+        debug_mode = False
+
+        findings = []
+
+        while(True):
+
+            if(STATE == 'CREATING_SESSION'):
+    
+                # STATE behavior          
+                CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
+                CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                CHROME_OPTIONS.add_argument("--enable-automation")
+                #CHROME_OPTIONS.add_argument("--window-size=800,600")
+                #CHROME_OPTIONS.add_argument("start-maximized");
+                self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                self.GMAPS_URL = 'https://www.google.com/maps/'
+
+                # transition logic
+                STATE = 'ACCESSING_GMAPS_URL'
+
+            elif(STATE == 'ACCESSING_GMAPS_URL'):
+                if(debug_mode): print(STATE)
+
+                # STATE behavior
+                url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
+                Browser.set_url(self.DRIVER, url)
+                time.sleep(2)
+
+                # transition logic
+                url = Browser.get_url(self.DRIVER)
+                if(self.has_title()):
+                    STATE = 'COLLECTING_SINGLE_RESULT'
+                elif(GMapsURL.is_search_page(url)):
+                    STATE = 'COLLECTING_PAGE_RESULTS'
+                else:
+                    STATE = 'FAIL'
+
+            elif(STATE == 'COLLECTING_PAGE_RESULTS'):
+                if(debug_mode): print(STATE)
 
                 # STATE behavior
                 self.access_search_page_result_by_index(PAGE_CURSOR)
@@ -230,13 +294,13 @@ class GMapsNav():
                     STATE = 'GOING_TO_NEXT_PAGE'
 
             elif(STATE == 'COLLECTING_CURSOR_RESULT'):
-                if(debug_mode): print('COLLECTING_CURSOR_RESULT')
+                if(debug_mode): print(STATE)
 
                 # STATE behavior
                 url = Browser.get_url(self.DRIVER)
                 finding = {
                     "place": { 
-                        "name": self.collect_place()['value'], 
+                        "title": self.collect_title()['value'], 
                         "address": self.collect_address()['value'],
                         #"contact": {
                         #    "phone": self.collect_phone()['value']
@@ -251,14 +315,14 @@ class GMapsNav():
                 findings.append(finding)
                 time.sleep(2)
 
-                print(finding)
+                if(debug_mode): print(finding)
          
                 # transition logic
                 PAGE_CURSOR += 1
                 STATE = 'RETURNING_TO_LIST'
 
             elif(STATE == 'COLLECTING_SINGLE_RESULT'):
-                if(debug_mode): print('COLLECTING_SINGLE_RESULT')
+                if(debug_mode): print(STATE)
                 
                 # STATE behavior
                 self.hit_searchbox_button()
@@ -270,7 +334,7 @@ class GMapsNav():
                 url = Browser.get_url(self.DRIVER)
                 finding = {
                     "place": { 
-                        "name": self.collect_place()['value'], 
+                        "title": self.collect_title()['value'], 
                         "address": self.collect_address()['value'],
                         #"contact": {
                         #    "phone": self.collect_phone()['value']
@@ -283,13 +347,13 @@ class GMapsNav():
                     }
                 }
                 findings.append(finding)
-                print(findings)
+                if(debug_mode): print(findings)
 
                 # transition logic
                 STATE = 'FINISH'
 
             elif(STATE == 'RETURNING_TO_LIST'):
-                if(debug_mode): print('RETURNING_TO_LIST')
+                if(debug_mode): print(STATE)
     
                 # STATE behavior
                 self.access_search_back_to_results()
@@ -299,10 +363,10 @@ class GMapsNav():
                 time.sleep(2)
 
                 # transition logic
-                STATE = 'ACCESSING_CURSOR_RESULT'
+                STATE = 'COLLECTING_PAGE_RESULTS'
 
             elif(STATE == 'GOING_TO_NEXT_PAGE'):
-                if(debug_mode): print('GOING_TO_NEXT_PAGE')
+                if(debug_mode): print(STATE)
 
                 # STATE behavior
                 self.access_search_back_to_results()
@@ -312,7 +376,7 @@ class GMapsNav():
 
                 # transition logic
                 if(has_next_page):
-                    STATE = 'ACCESSING_CURSOR_RESULT'
+                    STATE = 'COLLECTING_PAGE_RESULTS'
                     PAGE_CURSOR = 1
                 else:
                     STATE = 'FINISH'
@@ -327,4 +391,5 @@ class GMapsNav():
                 # do something for FAIL STATE
                 break
 
-        Browser.close(self.DRIVER)
+        Browser.quit(self.DRIVER)
+        return findings
