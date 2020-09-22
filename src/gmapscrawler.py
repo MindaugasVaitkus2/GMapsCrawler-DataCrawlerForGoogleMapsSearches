@@ -2,8 +2,9 @@
 import os
 import time
 
-from browser import Browser
-from gmapsurl import GMapsURL
+from browserhandler import BrowserHandler
+from gmapshandler import GMapsHandler
+from gmapsurlassembler import GMapsURLAssembler
 
 from selenium import webdriver
 from selenium.common import exceptions
@@ -21,123 +22,11 @@ class GMapsCrawler():
     def __init__(self, debug=False):
         self.GMAPS_URL = 'https://www.google.com/maps/'
         self.DEBUG_MODE = debug
-
-    def get_results_n(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
-        return len(elements_found)
-
-    def collect_search_page_results(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
-        search_page_results = []
-        for element in elements_found:
-            search_page_results.append({ 'title': element.text })
-        return search_page_results
-
-    def collect_title(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
-
-    def collect_address(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
-
-    def collect_status(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("cX2WmPgCkHi__section-info-text")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
-
-    def collect_phone(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
-
-    def access_search_page_result_by_index(self, index):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_class_name('section-result-text-content')
-        try:
-            possible_enabled_target_elements[index].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False
-
-    def access_search_next_page(self):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('n7lv7yjyC35__section-pagination-button-next')
-        try:
-            possible_enabled_target_elements[0].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False
-
-    def access_search_back_to_results(self):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_class_name('section-back-to-list-button')
-        try:
-            possible_enabled_target_elements[0].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False
-
-    def hit_zoom_in(self):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-in')
-        try:
-            possible_enabled_target_elements[0].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False        
-
-    def hit_zoom_out(self):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('widget-zoom-out')
-        try:
-            possible_enabled_target_elements[0].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False   
-
-    def hit_searchbox_button(self):
-        possible_enabled_target_elements = self.DRIVER.find_elements_by_id('searchbox-searchbutton')
-        try:
-            possible_enabled_target_elements[0].click()
-            return True
-        except Exception as e:
-            #print(e)
-            return False   
-
-    def has_title(self):
-        elements_found = self.DRIVER.find_elements_by_class_name("section-hero-header-title-title")
-        if(len(elements_found) > 0):
-            return True
-        else:
-            return False
+        self.CORRECTION_FACTOR = 0.0001364
 
     def get_titles(self, search_str):
 
         STATE = 'CREATING_SESSION'
-        has_next_page = True
         titles = []
 
         while(True):
@@ -148,7 +37,7 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE):
                     CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
                     CHROME_OPTIONS = Options()
-                    CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                    #CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
                     CHROME_OPTIONS.add_argument("--enable-automation");
                     self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
                 else:
@@ -165,15 +54,15 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
-                Browser.set_url(self.DRIVER, url)
+                url = GMapsURLAssembler.set_search_str(self.GMAPS_URL, search_str)
+                BrowserHandler.set_url(self.DRIVER, url)
                 time.sleep(2)
 
                 # transition logic
-                url = Browser.get_url(self.DRIVER)
-                if(self.has_title()):
+                url = BrowserHandler.get_url(self.DRIVER)
+                if(GMapsHandler.has_title(self.DRIVER)):
                     STATE = 'COLLECTING_SINGLE_RESULT'
-                elif(GMapsURL.is_search_page(url)):
+                elif(GMapsURLAssembler.is_search_page(url)):
                     STATE = 'COLLECTING_PAGE_RESULTS'
                 else:
                     STATE = 'FAIL'
@@ -182,7 +71,7 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior                
-                search_page_results = self.collect_search_page_results()
+                search_page_results = GMapsHandler.collect_search_page_results(self.DRIVER)
                 for search_page_result in search_page_results:
                     titles.append(search_page_result)
                 time.sleep(2)
@@ -194,17 +83,17 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
                 
                 # STATE behavior
-                self.hit_searchbox_button()
+                GMapsHandler.hit_searchbox_button(self.DRIVER)
                 time.sleep(2)
                 for _ in range(21):
-                    self.hit_zoom_in()
+                    GMapsHandler.hit_zoom_in(self.DRIVER)
                 time.sleep(2)
 
-                url = Browser.get_url(self.DRIVER)
-                finding = {
-                    "title": self.collect_title()['value'] 
+                url = BrowserHandler.get_url(self.DRIVER)
+                title = {
+                    "title": GMapsHandler.collect_title(self.DRIVER)['value'] 
                 }
-                titles.append(finding)
+                titles.append(title)
                 if(self.DEBUG_MODE): print(titles)
 
                 # transition logic
@@ -214,9 +103,9 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                self.access_search_back_to_results()
+                GMapsHandler.access_search_back_to_results(self.DRIVER)
                 time.sleep(2)
-                has_next_page = self.access_search_next_page()
+                has_next_page = GMapsHandler.access_search_next_page(self.DRIVER)
                 time.sleep(2)
 
                 # transition logic
@@ -235,7 +124,7 @@ class GMapsCrawler():
                 # do something for FAIL STATE
                 break
 
-        Browser.quit(self.DRIVER)
+        BrowserHandler.quit(self.DRIVER)
         return titles
 
     def get_places(self, search_str):
@@ -243,9 +132,7 @@ class GMapsCrawler():
         STATE = 'CREATING_SESSION'
         PAGE_CURSOR = 0
         PAGE_CURSOR_LIMIT = None
-        has_next_page = True
-
-        findings = []
+        places = []
 
         while(True):
 
@@ -255,7 +142,7 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE):
                     CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
                     CHROME_OPTIONS = Options()
-                    CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                    #CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
                     CHROME_OPTIONS.add_argument("--enable-automation");
                     self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
                 else:
@@ -272,15 +159,15 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
-                Browser.set_url(self.DRIVER, url)
+                url = GMapsURLAssembler.set_search_str(self.GMAPS_URL, search_str)
+                BrowserHandler.set_url(self.DRIVER, url)
                 time.sleep(2)
 
                 # transition logic
-                url = Browser.get_url(self.DRIVER)
-                if(self.has_title()):
+                url = BrowserHandler.get_url(self.DRIVER)
+                if(GMapsHandler.has_title(self.DRIVER)):
                     STATE = 'COLLECTING_SINGLE_RESULT'
-                elif(GMapsURL.is_search_page(url)):
+                elif(GMapsURLAssembler.is_search_page(url)):
                     STATE = 'COLLECTING_PAGE_RESULTS'
                 else:
                     STATE = 'FAIL'
@@ -289,8 +176,8 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                self.access_search_page_result_by_index(PAGE_CURSOR)
-                PAGE_CURSOR_LIMIT = self.get_results_n() - 1          
+                GMapsHandler.access_search_page_result_by_index(self.DRIVER, PAGE_CURSOR)
+                PAGE_CURSOR_LIMIT = GMapsHandler.get_results_n(self.DRIVER) - 1          
                 #print(PAGE_CURSOR_LIMIT)
                 #print(PAGE_CURSOR)  
                 #print('')  
@@ -306,25 +193,25 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                url = Browser.get_url(self.DRIVER)
-                finding = {
+                url = BrowserHandler.get_url(self.DRIVER)
+                place = {
                     "place": { 
-                        "title": self.collect_title()['value'], 
-                        "address": self.collect_address()['value'],
+                        "title": GMapsHandler.collect_title(self.DRIVER)['value'], 
+                        "address": GMapsHandler.collect_address(self.DRIVER)['value'],
                         #"contact": {
-                        #    "phone": self.collect_phone()['value']
+                        #    "phone": GMapsHandler.collect_phone(self.DRIVER)['value']
                         #},                      
-                        "status": self.collect_status()['value'],
+                        "status": GMapsHandler.collect_status(self.DRIVER)['value'],
                         "coordinates": {
-                            "latitude": GMapsURL.get_cursor(url)['lat'],
-                            "longitude": GMapsURL.get_cursor(url)['lon'] + 0.0001364
+                            "latitude": GMapsURLAssembler.get_cursor(url)['lat'],
+                            "longitude": GMapsURLAssembler.get_cursor(url)['lon'] + self.CORRECTION_FACTOR
                         } 
                     }
                 }
-                findings.append(finding)
+                places.append(place)
                 time.sleep(2)
 
-                if(self.DEBUG_MODE): print(finding)
+                if(self.DEBUG_MODE): print(place)
          
                 # transition logic
                 PAGE_CURSOR += 1
@@ -334,29 +221,29 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
                 
                 # STATE behavior
-                self.hit_searchbox_button()
+                GMapsHandler.hit_searchbox_button(self.DRIVER)
                 time.sleep(2)
                 for _ in range(21):
-                    self.hit_zoom_in()
+                    GMapsHandler.hit_zoom_in(self.DRIVER)
                 time.sleep(2)
 
-                url = Browser.get_url(self.DRIVER)
-                finding = {
+                url = BrowserHandler.get_url(self.DRIVER)
+                place = {
                     "place": { 
-                        "title": self.collect_title()['value'], 
-                        "address": self.collect_address()['value'],
+                        "title": GMapsHandler.collect_title(self.DRIVER)['value'], 
+                        "address": GMapsHandler.collect_address(self.DRIVER)['value'],
                         #"contact": {
-                        #    "phone": self.collect_phone()['value']
+                        #    "phone": GMapsHandler.collect_phone(self.DRIVER)['value']
                         #},                      
-                        "status": self.collect_status()['value'],
+                        "status": GMapsHandler.collect_status(self.DRIVER)['value'],
                         "coordinates": {
-                            "latitude": GMapsURL.get_cursor(url)['lat'],
-                            "longitude": GMapsURL.get_cursor(url)['lon'] + 0.0001364
+                            "latitude": GMapsURLAssembler.get_cursor(url)['lat'],
+                            "longitude": GMapsURLAssembler.get_cursor(url)['lon'] + self.CORRECTION_FACTOR
                         } 
                     }
                 }
-                findings.append(finding)
-                if(self.DEBUG_MODE): print(findings)
+                places.append(place)
+                if(self.DEBUG_MODE): print(places)
 
                 # transition logic
                 STATE = 'FINISH'
@@ -365,10 +252,10 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
     
                 # STATE behavior
-                self.access_search_back_to_results()
+                GMapsHandler.access_search_back_to_results(self.DRIVER)
                 time.sleep(2)
                 for _ in range(21):
-                    self.hit_zoom_in()
+                    GMapsHandler.hit_zoom_in(self.DRIVER)
                 time.sleep(2)
 
                 # transition logic
@@ -378,9 +265,9 @@ class GMapsCrawler():
                 if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
-                self.access_search_back_to_results()
+                GMapsHandler.access_search_back_to_results(self.DRIVER)
                 time.sleep(2)
-                has_next_page = self.access_search_next_page()
+                has_next_page = GMapsHandler.access_search_next_page(self.DRIVER)
                 time.sleep(2)
 
                 # transition logic
@@ -400,8 +287,8 @@ class GMapsCrawler():
                 # do something for FAIL STATE
                 break
 
-        Browser.quit(self.DRIVER)
-        return findings
+        BrowserHandler.quit(self.DRIVER)
+        return places
 
     def get_titles_df():
         pass

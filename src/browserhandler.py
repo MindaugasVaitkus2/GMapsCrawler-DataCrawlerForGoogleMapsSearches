@@ -1,7 +1,7 @@
 
 from abc import ABC
 
-class Browser(ABC):
+class BrowserHandler(ABC):
 
     @staticmethod
     def get_url(DRIVER):

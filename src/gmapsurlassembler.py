@@ -2,7 +2,7 @@
 from abc import ABC
 import re
 
-class GMapsURL(ABC):
+class GMapsURLAssembler(ABC):
 
     @staticmethod
     def _get_re_matches(pattern_re, input_str):
@@ -22,15 +22,15 @@ class GMapsURL(ABC):
         cursor = { 'lat': None, 'lon': None, 'zoom': None }
 
         pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
-        re_matches = GMapsURL._get_re_matches(pattern_re, target_str)
+        re_matches = GMapsURLAssembler._get_re_matches(pattern_re, target_str)
         cursor['lat'] = float(re_matches[0].group().replace('/@', '').replace(',', ''))
 
         pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
-        re_matches = GMapsURL._get_re_matches(pattern_re, target_str)
+        re_matches = GMapsURLAssembler._get_re_matches(pattern_re, target_str)
         cursor['lon'] = float(re_matches[0].group().replace(',', ''))
 
         pattern_re = '[,][0-9]*[z]'
-        re_matches = GMapsURL._get_re_matches(pattern_re, target_str)
+        re_matches = GMapsURLAssembler._get_re_matches(pattern_re, target_str)
         cursor['zoom'] = int(re_matches[0].group().replace(',', '').replace('z', ''))
 
         return cursor
@@ -43,15 +43,15 @@ class GMapsURL(ABC):
 
             pattern_re = '(/@)(-)?[0-9]*[.][0-9]*[,]'
             replacement_str = '/@' + str(cursor['lat']) + ','
-            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            target_str = GMapsURLAssembler._get_re_replaced_str(pattern_re, replacement_str, target_str)
 
             pattern_re = '[,](-)?[0-9]*[.][0-9]*[,]'
             replacement_str = ',' + str(cursor['lon']) + ','
-            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            target_str = GMapsURLAssembler._get_re_replaced_str(pattern_re, replacement_str, target_str)
 
             pattern_re = '[,][0-9]*[z]'
             replacement_str = ',' +  str(cursor['zoom']) + 'z'
-            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            target_str = GMapsURLAssembler._get_re_replaced_str(pattern_re, replacement_str, target_str)
         
         elif('/search/' in target_str):
 
@@ -66,7 +66,7 @@ class GMapsURL(ABC):
         search_str = None
 
         pattern_re = '(/maps/search/)(.)*?[/]'
-        re_matches = GMapsURL._get_re_matches(pattern_re, target_str)
+        re_matches = GMapsURLAssembler._get_re_matches(pattern_re, target_str)
         search_str = re_matches[0].group().replace('/maps/search/', '').replace('/', '').replace('+', ' ')
         return search_str
 
@@ -78,11 +78,11 @@ class GMapsURL(ABC):
         if('/search/' in target_str):
             pattern_re = '(/maps/search/)(.)*?[/]'
             replacement_str = '/maps/search/' + str(search_str) + '/'
-            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            target_str = GMapsURLAssembler._get_re_replaced_str(pattern_re, replacement_str, target_str)
         else:
             pattern_re = '(/maps/)(.)*'
             replacement_str = '/maps/search/' + str(search_str) + '/'
-            target_str = GMapsURL._get_re_replaced_str(pattern_re, replacement_str, target_str)
+            target_str = GMapsURLAssembler._get_re_replaced_str(pattern_re, replacement_str, target_str)
         return target_str
 
     @staticmethod
@@ -111,9 +111,9 @@ if __name__ == '__main__':
     print('NEW CURSOR:        ', new_cursor)
     print('NEW SEARCH STRING: ', new_search_str)
     print('')
-    print('ORIGINAL CURSOR IS:              ', GMapsURL.get_cursor(GMAPS_URL))
-    print('WITH NEW CURSOR, THE NEW URL IS: ', GMapsURL.set_cursor(GMAPS_URL, new_cursor))
+    print('ORIGINAL CURSOR IS:              ', GMapsURLAssembler.get_cursor(GMAPS_URL))
+    print('WITH NEW CURSOR, THE NEW URL IS: ', GMapsURLAssembler.set_cursor(GMAPS_URL, new_cursor))
     print('')
-    print('ORIGINAL SEARCH STRING IS:              ', GMapsURL.get_search_str(GMAPS_URL))
-    print('WITH NEW SEARCH STRING, THE NEW URL IS: ', GMapsURL.set_search_str(GMAPS_URL, new_search_str))
+    print('ORIGINAL SEARCH STRING IS:              ', GMapsURLAssembler.get_search_str(GMAPS_URL))
+    print('WITH NEW SEARCH STRING, THE NEW URL IS: ', GMapsURLAssembler.set_search_str(GMAPS_URL, new_search_str))
     print('')
