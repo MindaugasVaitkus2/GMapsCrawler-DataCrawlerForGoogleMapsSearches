@@ -10,6 +10,8 @@ from selenium.common import exceptions
 from selenium.webdriver.chrome.options import Options
 from selenium.common import exceptions
 
+import pandas as pd
+
 class GMapsCrawler():
 
     DRIVER = None
@@ -393,3 +395,9 @@ class GMapsCrawler():
 
         Browser.quit(self.DRIVER)
         return findings
+
+    def get_titles_df():
+        pass
+
+    def get_places_df():
+        pass
