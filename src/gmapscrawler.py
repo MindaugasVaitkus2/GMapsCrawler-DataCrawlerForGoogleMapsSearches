@@ -18,7 +18,7 @@ class GMapsCrawler():
     GMAPS_URL = None
 
     def __init__(self):
-        pass
+        self.GMAPS_URL = 'https://www.google.com/maps/'
 
     def get_results_n(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
@@ -145,13 +145,10 @@ class GMapsCrawler():
 
                 # STATE behavior          
                 CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
-                CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
-                CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
-                CHROME_OPTIONS.add_argument("--enable-automation")
-                #CHROME_OPTIONS.add_argument("--window-size=800,600")
-                #CHROME_OPTIONS.add_argument("start-maximized");
+                CHROME_OPTIONS = Options()
+                CHROME_OPTIONS.add_argument('--headless')
+                CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
                 self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
-                self.GMAPS_URL = 'https://www.google.com/maps/'
 
                 # transition logic
                 STATE = 'ACCESSING_GMAPS_URL'
@@ -250,13 +247,10 @@ class GMapsCrawler():
     
                 # STATE behavior          
                 CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
-                CHROME_OPTIONS = webdriver.ChromeOptions() #Options()
-                CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
-                CHROME_OPTIONS.add_argument("--enable-automation")
-                #CHROME_OPTIONS.add_argument("--window-size=800,600")
-                #CHROME_OPTIONS.add_argument("start-maximized");
+                CHROME_OPTIONS = Options()
+                CHROME_OPTIONS.add_argument('--headless')
+                CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
                 self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
-                self.GMAPS_URL = 'https://www.google.com/maps/'
 
                 # transition logic
                 STATE = 'ACCESSING_GMAPS_URL'
