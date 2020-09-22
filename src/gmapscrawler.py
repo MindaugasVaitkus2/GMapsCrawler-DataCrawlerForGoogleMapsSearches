@@ -16,9 +16,11 @@ class GMapsCrawler():
 
     DRIVER = None
     GMAPS_URL = None
+    DEBUG_MODE = None
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.GMAPS_URL = 'https://www.google.com/maps/'
+        self.DEBUG_MODE = debug
 
     def get_results_n(self):
         elements_found = self.DRIVER.find_elements_by_class_name("section-result-title")
@@ -136,25 +138,31 @@ class GMapsCrawler():
 
         STATE = 'CREATING_SESSION'
         has_next_page = True
-        debug_mode = False
         titles = []
 
         while(True):
 
             if(STATE == 'CREATING_SESSION'):
 
-                # STATE behavior          
-                CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
-                CHROME_OPTIONS = Options()
-                CHROME_OPTIONS.add_argument('--headless')
-                CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
-                self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                # STATE behavior
+                if(self.DEBUG_MODE):
+                    CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                    CHROME_OPTIONS = Options()
+                    CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                    CHROME_OPTIONS.add_argument("--enable-automation");
+                    self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                else:
+                    CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                    CHROME_OPTIONS = Options()
+                    CHROME_OPTIONS.add_argument('--headless')
+                    CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
+                    self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
 
                 # transition logic
                 STATE = 'ACCESSING_GMAPS_URL'
 
             elif(STATE == 'ACCESSING_GMAPS_URL'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
@@ -171,7 +179,7 @@ class GMapsCrawler():
                     STATE = 'FAIL'
 
             elif(STATE == 'COLLECTING_PAGE_RESULTS'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior                
                 search_page_results = self.collect_search_page_results()
@@ -183,7 +191,7 @@ class GMapsCrawler():
                 STATE = 'GOING_TO_NEXT_PAGE'
 
             elif(STATE == 'COLLECTING_SINGLE_RESULT'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
                 
                 # STATE behavior
                 self.hit_searchbox_button()
@@ -197,13 +205,13 @@ class GMapsCrawler():
                     "title": self.collect_title()['value'] 
                 }
                 titles.append(finding)
-                if(debug_mode): print(titles)
+                if(self.DEBUG_MODE): print(titles)
 
                 # transition logic
                 STATE = 'FINISH'
 
             elif(STATE == 'GOING_TO_NEXT_PAGE'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 self.access_search_back_to_results()
@@ -218,12 +226,12 @@ class GMapsCrawler():
                     STATE = 'FINISH'
 
             elif(STATE == 'FINISH'):
-                if(debug_mode): print('FINISH')
+                if(self.DEBUG_MODE): print('FINISH')
                 # do something for FINISH STATE
                 break
 
             elif(STATE == 'FAIL'):
-                if(debug_mode): print('FAIL')
+                if(self.DEBUG_MODE): print('FAIL')
                 # do something for FAIL STATE
                 break
 
@@ -237,26 +245,31 @@ class GMapsCrawler():
         PAGE_CURSOR_LIMIT = None
         has_next_page = True
 
-        debug_mode = False
-
         findings = []
 
         while(True):
 
             if(STATE == 'CREATING_SESSION'):
     
-                # STATE behavior          
-                CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
-                CHROME_OPTIONS = Options()
-                CHROME_OPTIONS.add_argument('--headless')
-                CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
-                self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                # STATE behavior
+                if(self.DEBUG_MODE):
+                    CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                    CHROME_OPTIONS = Options()
+                    CHROME_OPTIONS.add_argument("--user-data-dir=.\chrome-data")
+                    CHROME_OPTIONS.add_argument("--enable-automation");
+                    self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
+                else:
+                    CHROMEDRIVER_PATH = os.environ['CHROMEDRIVER_PATH']
+                    CHROME_OPTIONS = Options()
+                    CHROME_OPTIONS.add_argument('--headless')
+                    CHROME_OPTIONS.add_argument('--disable-gpu')  # Last I checked this was necessary.
+                    self.DRIVER = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=CHROME_OPTIONS)
 
                 # transition logic
                 STATE = 'ACCESSING_GMAPS_URL'
 
             elif(STATE == 'ACCESSING_GMAPS_URL'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 url = GMapsURL.set_search_str(self.GMAPS_URL, search_str)
@@ -273,7 +286,7 @@ class GMapsCrawler():
                     STATE = 'FAIL'
 
             elif(STATE == 'COLLECTING_PAGE_RESULTS'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 self.access_search_page_result_by_index(PAGE_CURSOR)
@@ -290,7 +303,7 @@ class GMapsCrawler():
                     STATE = 'GOING_TO_NEXT_PAGE'
 
             elif(STATE == 'COLLECTING_CURSOR_RESULT'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 url = Browser.get_url(self.DRIVER)
@@ -311,14 +324,14 @@ class GMapsCrawler():
                 findings.append(finding)
                 time.sleep(2)
 
-                if(debug_mode): print(finding)
+                if(self.DEBUG_MODE): print(finding)
          
                 # transition logic
                 PAGE_CURSOR += 1
                 STATE = 'RETURNING_TO_LIST'
 
             elif(STATE == 'COLLECTING_SINGLE_RESULT'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
                 
                 # STATE behavior
                 self.hit_searchbox_button()
@@ -343,13 +356,13 @@ class GMapsCrawler():
                     }
                 }
                 findings.append(finding)
-                if(debug_mode): print(findings)
+                if(self.DEBUG_MODE): print(findings)
 
                 # transition logic
                 STATE = 'FINISH'
 
             elif(STATE == 'RETURNING_TO_LIST'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
     
                 # STATE behavior
                 self.access_search_back_to_results()
@@ -362,7 +375,7 @@ class GMapsCrawler():
                 STATE = 'COLLECTING_PAGE_RESULTS'
 
             elif(STATE == 'GOING_TO_NEXT_PAGE'):
-                if(debug_mode): print(STATE)
+                if(self.DEBUG_MODE): print(STATE)
 
                 # STATE behavior
                 self.access_search_back_to_results()
@@ -378,12 +391,12 @@ class GMapsCrawler():
                     STATE = 'FINISH'
 
             elif(STATE == 'FINISH'):
-                if(debug_mode): print('FINISH')
+                if(self.DEBUG_MODE): print('FINISH')
                 # do something for FINISH STATE
                 break
 
             elif(STATE == 'FAIL'):
-                if(debug_mode): print('FAIL')
+                if(self.DEBUG_MODE): print('FAIL')
                 # do something for FAIL STATE
                 break
 

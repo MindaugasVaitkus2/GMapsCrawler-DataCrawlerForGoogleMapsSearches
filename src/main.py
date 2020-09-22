@@ -5,10 +5,10 @@ from gmapscrawler import GMapsCrawler
 if __name__ == '__main__':
 
     # GMapsCrawler instatiation
-    crawler = GMapsCrawler()
+    crawler = GMapsCrawler(debug=True)
 
     # example of a search string
-    search_str = 'statue of liberty'
+    search_str = 'statue'
 
     # uses search string to get a list titles
     places_str = crawler.get_titles(search_str)
