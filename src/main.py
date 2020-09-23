@@ -8,7 +8,7 @@ if __name__ == '__main__':
     crawler = GMapsCrawler(debug=True)
 
     # example of a search string
-    search_str = 'petrolina Estádio Paulo Coelho'
+    search_str = 'petrolina pizzaria pastelaria recanto'
 
     # uses search string to get a list titles
     places_str = crawler.get_titles(search_str)

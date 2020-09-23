@@ -19,9 +19,10 @@ class GMapsCrawler():
     GMAPS_URL = None
     DEBUG_MODE = None
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, delay=2):
         self.GMAPS_URL = 'https://www.google.com/maps/'
         self.DEBUG_MODE = debug
+        self.DEFAULT_DELAY = delay
         self.CORRECTION_FACTOR = 0.0001364
 
     def get_titles(self, search_str):
@@ -56,7 +57,7 @@ class GMapsCrawler():
                 # STATE behavior
                 url = GMapsURLAssembler.set_search_str(self.GMAPS_URL, search_str)
                 BrowserHandler.set_url(self.DRIVER, url)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 url = BrowserHandler.get_url(self.DRIVER)
@@ -74,7 +75,7 @@ class GMapsCrawler():
                 search_page_results = GMapsHandler.collect_search_page_results(self.DRIVER)
                 for search_page_result in search_page_results:
                     titles.append(search_page_result)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 STATE = 'GOING_TO_NEXT_PAGE'
@@ -84,10 +85,10 @@ class GMapsCrawler():
                 
                 # STATE behavior
                 GMapsHandler.hit_searchbox_button(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
                 for _ in range(21):
                     GMapsHandler.hit_zoom_in(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 url = BrowserHandler.get_url(self.DRIVER)
                 title = {
@@ -104,9 +105,9 @@ class GMapsCrawler():
 
                 # STATE behavior
                 GMapsHandler.access_search_back_to_results(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
                 has_next_page = GMapsHandler.access_search_next_page(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 if(has_next_page):
@@ -161,7 +162,7 @@ class GMapsCrawler():
                 # STATE behavior
                 url = GMapsURLAssembler.set_search_str(self.GMAPS_URL, search_str)
                 BrowserHandler.set_url(self.DRIVER, url)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 url = BrowserHandler.get_url(self.DRIVER)
@@ -181,7 +182,7 @@ class GMapsCrawler():
                 #print(PAGE_CURSOR_LIMIT)
                 #print(PAGE_CURSOR)  
                 #print('')  
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 if(PAGE_CURSOR <= PAGE_CURSOR_LIMIT):
@@ -209,7 +210,7 @@ class GMapsCrawler():
                     }
                 }
                 places.append(place)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 if(self.DEBUG_MODE): print(place)
          
@@ -222,10 +223,10 @@ class GMapsCrawler():
                 
                 # STATE behavior
                 GMapsHandler.hit_searchbox_button(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
                 for _ in range(21):
                     GMapsHandler.hit_zoom_in(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 url = BrowserHandler.get_url(self.DRIVER)
                 place = {
@@ -253,10 +254,10 @@ class GMapsCrawler():
     
                 # STATE behavior
                 GMapsHandler.access_search_back_to_results(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
                 for _ in range(21):
                     GMapsHandler.hit_zoom_in(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 STATE = 'COLLECTING_PAGE_RESULTS'
@@ -266,9 +267,9 @@ class GMapsCrawler():
 
                 # STATE behavior
                 GMapsHandler.access_search_back_to_results(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
                 has_next_page = GMapsHandler.access_search_next_page(self.DRIVER)
-                time.sleep(2)
+                time.sleep(self.DEFAULT_DELAY)
 
                 # transition logic
                 if(has_next_page):
