@@ -35,7 +35,7 @@ class GMapsHandler(ABC):
         texts_found = []
         for element in elements_found:
             texts_found.append({'value': element.text})
-        if(len(texts_found) > 0).:
+        if(len(texts_found) > 0):
             return texts_found
         else:
             return [{'value': None }]

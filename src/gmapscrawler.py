@@ -15,10 +15,6 @@ import pandas as pd
 
 class GMapsCrawler():
 
-    DRIVER = None
-    GMAPS_URL = None
-    DEBUG_MODE = None
-
     def __init__(self, debug=False, delay=2):
         self.GMAPS_URL = 'https://www.google.com/maps/'
         self.DEBUG_MODE = debug
