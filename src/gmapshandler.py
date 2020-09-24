@@ -1,6 +1,8 @@
 
 from abc import ABC
 
+from gmapsurlassembler import GMapsURLAssembler
+
 class GMapsHandler(ABC):
 
     @staticmethod
@@ -28,37 +30,34 @@ class GMapsHandler(ABC):
             return {'value': None }
 
     @staticmethod
-    def collect_address(DRIVER):
+    def collect_labels(DRIVER):
         elements_found = DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
         texts_found = []
         for element in elements_found:
             texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
+        if(len(texts_found) > 0).:
+            return texts_found
         else:
-            return {'value': None }
+            return [{'value': None }]
 
     @staticmethod
-    def collect_status(DRIVER):
-        elements_found = DRIVER.find_elements_by_class_name("cX2WmPgCkHi__section-info-text")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
+    def collect_coordinates(url, CORRECTION_FACTOR):
+        coordinates = {
+            "latitude": GMapsURLAssembler.get_cursor(url)['lat'],
+            "longitude": GMapsURLAssembler.get_cursor(url)['lon'] + CORRECTION_FACTOR
+        }
+        return coordinates
 
     @staticmethod
-    def collect_phone(DRIVER):
-        elements_found = DRIVER.find_elements_by_class_name("ugiz4pqJLAG__primary-text")
-        texts_found = []
-        for element in elements_found:
-            texts_found.append({'value': element.text})
-        if(len(texts_found) > 0):
-            return texts_found[0]
-        else:
-            return {'value': None }
+    def collect_place(DRIVER, url, CORRECTION_FACTOR):
+        place = {
+            "place": { 
+                "title": GMapsHandler.collect_title(DRIVER)['value'],
+                "coordinates": GMapsHandler.collect_coordinates(url, CORRECTION_FACTOR),
+                "labels": GMapsHandler.collect_labels(DRIVER)
+            }
+        }
+        return place
 
     @staticmethod
     def access_search_page_result_by_index(DRIVER, index):

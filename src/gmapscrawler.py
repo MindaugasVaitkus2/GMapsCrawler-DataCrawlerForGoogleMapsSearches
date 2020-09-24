@@ -195,20 +195,7 @@ class GMapsCrawler():
 
                 # STATE behavior
                 url = BrowserHandler.get_url(self.DRIVER)
-                place = {
-                    "place": { 
-                        "title": GMapsHandler.collect_title(self.DRIVER)['value'], 
-                        "address": GMapsHandler.collect_address(self.DRIVER)['value'],
-                        #"contact": {
-                        #    "phone": GMapsHandler.collect_phone(self.DRIVER)['value']
-                        #},                      
-                        "status": GMapsHandler.collect_status(self.DRIVER)['value'],
-                        "coordinates": {
-                            "latitude": GMapsURLAssembler.get_cursor(url)['lat'],
-                            "longitude": GMapsURLAssembler.get_cursor(url)['lon'] + self.CORRECTION_FACTOR
-                        } 
-                    }
-                }
+                place = GMapsHandler.collect_place(self.DRIVER, url, self.CORRECTION_FACTOR)
                 places.append(place)
                 time.sleep(self.DEFAULT_DELAY)
 
@@ -229,20 +216,7 @@ class GMapsCrawler():
                 time.sleep(self.DEFAULT_DELAY)
 
                 url = BrowserHandler.get_url(self.DRIVER)
-                place = {
-                    "place": { 
-                        "title": GMapsHandler.collect_title(self.DRIVER)['value'], 
-                        "address": GMapsHandler.collect_address(self.DRIVER)['value'],
-                        #"contact": {
-                        #    "phone": GMapsHandler.collect_phone(self.DRIVER)['value']
-                        #},                      
-                        "status": GMapsHandler.collect_status(self.DRIVER)['value'],
-                        "coordinates": {
-                            "latitude": GMapsURLAssembler.get_cursor(url)['lat'],
-                            "longitude": GMapsURLAssembler.get_cursor(url)['lon'] + self.CORRECTION_FACTOR
-                        } 
-                    }
-                }
+                place = GMapsHandler.collect_place(self.DRIVER, url, self.CORRECTION_FACTOR)
                 places.append(place)
                 if(self.DEBUG_MODE): print(places)
 
