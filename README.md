@@ -19,7 +19,7 @@ The purpose of this project is to deploy a platform to collect data from Google 
 
 ## 2. Requirements
 
-* Python 3.8 32-bit/64-bit installed
+* Python 3.8 installed
 * Google Chrome Browser installed
 * ChromeDriver downloaded (`chromedriver.exe` available on your computer - see [3. Getting Started](#getting-started))
 
