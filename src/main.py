@@ -1,4 +1,4 @@
-from gmapscrawler import GMapsCrawler
+from gmapscrawler.gmapscrawler import GMapsCrawler
 
 if __name__ == '__main__':
 

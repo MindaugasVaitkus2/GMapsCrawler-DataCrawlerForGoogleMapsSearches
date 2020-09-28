@@ -2,9 +2,9 @@
 import os
 import time
 
-from browserhandler import BrowserHandler
-from gmapshandler import GMapsHandler
-from gmapsurlassembler import GMapsURLAssembler
+from . browserhandler import BrowserHandler
+from . gmapshandler import GMapsHandler
+from . gmapsurlassembler import GMapsURLAssembler
 
 from selenium import webdriver
 from selenium.common import exceptions

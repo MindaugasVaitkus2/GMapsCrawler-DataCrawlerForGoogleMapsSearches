@@ -1,7 +1,7 @@
 
 from abc import ABC
 
-from gmapsurlassembler import GMapsURLAssembler
+from . gmapsurlassembler import GMapsURLAssembler
 
 class GMapsHandler(ABC):
 

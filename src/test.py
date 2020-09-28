@@ -1,7 +1,7 @@
 import time
 from multiprocessing import Process
 
-from gmapscrawler import GMapsCrawler
+from gmapscrawler.gmapscrawler import GMapsCrawler
 
 def func_1():
     crawler = GMapsCrawler(debug=False, delay=5)
