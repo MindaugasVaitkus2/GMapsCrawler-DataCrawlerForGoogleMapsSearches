@@ -9,8 +9,8 @@ if __name__ == '__main__':
     search_str = 'pizzaria petrolina'
 
     # uses search string to get a list titles
-    titles = crawler.get_titles(search_str)
-    print(titles)
+    #titles = crawler.get_titles(search_str)
+    #print(titles)
 
     # uses search string to get a list of detailed places
     places = crawler.get_places(search_str)
